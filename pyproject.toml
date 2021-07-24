@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+
+[tool.poetry]
+name = "1money-reports"
+version = "0.0.1"
+description = ""
+authors = ["Ivan Reshetnikov <resivalex@gmail.com>"]
+packages = [{ include = "*", from = "src" }]
+
+[tool.poetry.dependencies]
+python = "~=3.8"
+flask = "~=1.1.2" # A simple framework for building complex web applications
+numpy = "~=1.18.5" # The fundamental package for scientific computing with Python
+pandas = "~=1.2.1" # Powerful data structures for data analysis, time series, and statistics
+pytest = "~=6.1.2" # Simple powerful testing with Python
+pytest-mock = "~=3.4.0" # Thin-wrapper around the mock package for easier use with pytest
+
+[tool.poetry.dev-dependencies]
+pyproject-flake8 = "*" # The modular source code checker: PEP8 pyflakes and co (a monkey patching wrapper to connect flake8 with pyproject.toml configuration)
+
+[tool.flake8]
+max-line-length = 120

@@ -1,0 +1,12 @@
+version: "3.9"
+services:
+  backend:
+    build: .
+    command: poetry run python src/server.py
+    container_name: money__backend
+    environment:
+      - FLASK_ENV=production
+    ports:
+      - "11111:80"
+    volumes:
+      - ./mounted:/app/mounted
