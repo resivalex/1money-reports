@@ -3,7 +3,7 @@ services:
   backend:
     build: .
     command: poetry run python src/server.py
-    container_name: money__backend
+    container_name: 1money
     environment:
       - FLASK_ENV=production
     ports:

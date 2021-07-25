@@ -1,12 +1,12 @@
-from flask import Flask, request, make_response
-from config import load_config
+from flask import Flask, request, make_response, send_from_directory
+from config import load_config, PROJECT_ROOT_PATH
 import os
-import json
 from functools import lru_cache
 import pandas as pd
 import numpy as np
 from io import StringIO
 import traceback
+import simplejson
 
 
 @lru_cache()
@@ -27,7 +27,7 @@ def debug():
 os.environ['PYTHONIOENCODING'] = 'UTF-8'
 
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='')
 
 
 class UnauthorizedError(Exception):
@@ -76,7 +76,7 @@ def handle_exception(exception):
 
 
 def generate_json(value):
-    return json.dumps(value, indent=2, ensure_ascii=False).encode('utf8')
+    return simplejson.dumps(value, indent=2, ensure_ascii=False, ignore_nan=True).encode('utf8')
 
 
 @app.route('/info', methods=['GET'])
@@ -98,6 +98,18 @@ def sample_record():
     df = pd.read_csv(StringIO('\n'.join(transactions_lines)), names=headers)
 
     return success_response(dict(df.sample(1).iloc[0]))
+
+
+@app.route('/static/<path:path>', methods=['GET'])
+def serve_static(path):
+    return send_from_directory(f'{PROJECT_ROOT_PATH}/web/build/static', path)
+
+
+@app.route('/', methods=['GET'])
+def index():
+    resp = make_response(open(f'{PROJECT_ROOT_PATH}/web/build/index.html').read(), 200)
+    resp.headers['Content-Type'] = 'text/html'
+    return resp
 
 
 app.run(host='0.0.0.0', port=80)
