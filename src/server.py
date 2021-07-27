@@ -7,6 +7,7 @@ import numpy as np
 from io import StringIO
 import traceback
 import simplejson
+from transactions import Analytics
 
 
 @lru_cache()
@@ -28,6 +29,7 @@ os.environ['PYTHONIOENCODING'] = 'UTF-8'
 
 
 app = Flask(__name__, static_url_path='')
+analytics = Analytics(csv_path=config()['data_path'])
 
 
 class UnauthorizedError(Exception):
@@ -90,14 +92,7 @@ def info():
 def sample_record():
     check_authorization()
 
-    csv = open(config()['data_path']).read()
-    lines = csv.split('\n')
-    comma_line_index = np.where(np.array(lines) == ',')[0][0]
-    transactions_lines = lines[:comma_line_index]
-    headers = pd.read_csv(StringIO(transactions_lines[0])).columns
-    df = pd.read_csv(StringIO('\n'.join(transactions_lines)), names=headers)
-
-    return success_response(dict(df.sample(1).iloc[0]))
+    return success_response(analytics.sample_record())
 
 
 @app.route('/static/<path:path>', methods=['GET'])

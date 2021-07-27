@@ -1,1 +1,1 @@
-docker-compose -f docker-compose.yml up --build --detach
+docker-compose -f scripts/production/docker-compose.yml up --build --detach

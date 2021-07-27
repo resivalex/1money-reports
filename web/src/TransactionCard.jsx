@@ -16,14 +16,20 @@ function content(data) {
     return 'Нет данных'
   }
   return <div>
-    <Typography sx={{ fontSize: 16 }} color="text.secondary" gutterBottom>
-      {data['ДАТА']}
-    </Typography>
     <Typography sx={{ fontSize: 18 }} color="text.secondary" gutterBottom>
-      {data['СО СЧЁТА']} > {data['НА СЧЁТ / НА КАТЕГОРИЮ']}
+      {data['type']}
     </Typography>
     <Typography sx={{ fontSize: 20 }} color="text.secondary" gutterBottom>
-      {data['СУММА']} {data['ВАЛЮТА']}
+      {data['date']}
+    </Typography>
+    <Typography sx={{ fontSize: 18 }} color="text.secondary" gutterBottom>
+      {data['source']} > {data['target']}
+    </Typography>
+    <Typography sx={{ fontSize: 20 }} color="text.secondary" gutterBottom>
+      {data['amount']} {data['currency']}
+    </Typography>
+    <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
+      {data['notes']}
     </Typography>
   </div>
 }

@@ -1,7 +1,7 @@
 version: "3.9"
 services:
-  backend:
-    build: .
+  app:
+    build: ../..
     command: poetry run python src/server.py
     container_name: 1money
     environment:
@@ -9,4 +9,4 @@ services:
     ports:
       - "11111:80"
     volumes:
-      - ./mounted:/app/mounted
+      - ../../mounted:/app/mounted

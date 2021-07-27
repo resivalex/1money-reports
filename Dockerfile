@@ -1,5 +1,9 @@
 FROM python:3.8
 
+# Install SSH Server
+RUN apt update && apt -y install openssh-server
+RUN apt purge -y whois && apt -y autoremove && apt -y autoclean && apt -y clean
+
 WORKDIR /app
 
 # Node.js

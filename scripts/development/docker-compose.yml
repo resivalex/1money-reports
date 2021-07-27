@@ -1,13 +1,14 @@
 version: "3.9"
 services:
-  backend:
-    build: .
-    command: sh scripts/sleep.sh
+  app:
+    build: ../..
+    command: sh scripts/development/sleep.sh
     container_name: 1money__dev
     environment:
       - FLASK_ENV=development
     ports:
       - "11111:80"
       - "3000:3000"
+      - "22222:22"
     volumes:
-      - .:/app
+      - ../..:/app
