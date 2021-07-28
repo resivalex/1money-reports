@@ -1,6 +1,16 @@
 import pandas as pd
 import numpy as np
 from io import StringIO
+from decimal import Decimal
+import pendulum
+
+
+def _convert_to_decimal(s):
+    return Decimal(s)
+
+
+def _convert_to_date(s):
+    return pendulum.from_format(s, 'DD.MM.YYYY')
 
 
 class SourceReport:
@@ -14,9 +24,16 @@ class SourceReport:
         comma_line_index = np.where(np.array(lines) == ',')[0][0]
         transactions_lines = lines[:comma_line_index]
         headers = pd.read_csv(StringIO(transactions_lines[0]))
-        transactions = pd.read_csv(StringIO('\n'.join(transactions_lines[1:])), names=headers.columns)
+        transactions = pd.read_csv(
+            StringIO('\n'.join(transactions_lines[1:])),
+            names=headers.columns,
+            converters={
+                'СУММА': _convert_to_decimal
+            },
+            dtype={'ДАТА': 'O'}
+        )
         result = pd.DataFrame({
-            'date': transactions['ДАТА'],
+            'date': pd.Series([_convert_to_date(s) for s in transactions['ДАТА']], dtype='O'),
             'type': transactions['ТИП'].replace({'Расход': 'expense', 'Перевод': 'transfer', 'Доход': 'income'}),
             'source': transactions['СО СЧЁТА'],
             'target': transactions['НА СЧЁТ / НА КАТЕГОРИЮ'],

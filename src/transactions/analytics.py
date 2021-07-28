@@ -1,5 +1,5 @@
 from .source_report import SourceReport
-from functools import lru_cache
+from .expence_analytics import ExpenseAnalytics
 
 
 class Analytics:
@@ -8,8 +8,21 @@ class Analytics:
         self.source_report = SourceReport(csv_path)
 
     def sample_record(self):
-        return dict(self.df().sample(1).iloc[0])
+        row = self.__df().sample(1).iloc[0]
+        return {
+            'date': row['date'].to_date_string(),
+            'type': row['type'],
+            'source': row['source'],
+            'target': row['target'],
+            'amount': f"{row['amount']:.02f}",
+            'notes': row['notes']
+        }
 
-    @lru_cache()
-    def df(self):
+    def last_month_summary(self):
+        return self.expense_analytics().last_month_summary()
+
+    def expense_analytics(self):
+        return ExpenseAnalytics(self.__df()[self.__df()['type'] == 'expense'])
+
+    def __df(self):
         return self.source_report.parse_to_dataframe()

@@ -16,6 +16,7 @@ pandas = "~=1.2.1" # Powerful data structures for data analysis, time series, an
 pytest = "~=6.1.2" # Simple powerful testing with Python
 pytest-mock = "~=3.4.0" # Thin-wrapper around the mock package for easier use with pytest
 simplejson = "~=3.17.3" # Simple, fast, extensible JSON encoder/decoder for Python
+pendulum = "^2.1.2"
 
 [tool.poetry.dev-dependencies]
 pyproject-flake8 = "*" # The modular source code checker: PEP8 pyflakes and co (a monkey patching wrapper to connect flake8 with pyproject.toml configuration)

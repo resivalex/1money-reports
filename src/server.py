@@ -2,9 +2,6 @@ from flask import Flask, request, make_response, send_from_directory
 from config import load_config, PROJECT_ROOT_PATH
 import os
 from functools import lru_cache
-import pandas as pd
-import numpy as np
-from io import StringIO
 import traceback
 import simplejson
 from transactions import Analytics
@@ -93,6 +90,13 @@ def sample_record():
     check_authorization()
 
     return success_response(analytics.sample_record())
+
+
+@app.route('/last_month_summary', methods=['GET'])
+def last_month_summary():
+    check_authorization()
+
+    return success_response(analytics.last_month_summary())
 
 
 @app.route('/static/<path:path>', methods=['GET'])
