@@ -14,15 +14,19 @@ class SourceReport:
         comma_line_index = np.where(np.array(lines) == ',')[0][0]
         transactions_lines = lines[:comma_line_index]
         headers = pd.read_csv(StringIO(transactions_lines[0]))
-        transactions = pd.read_csv(StringIO('\n'.join(transactions_lines)), names=headers.columns)
+        transactions = pd.read_csv(StringIO('\n'.join(transactions_lines[1:])), names=headers.columns)
         result = pd.DataFrame({
             'date': transactions['ДАТА'],
-            'type': transactions['ТИП'],
+            'type': transactions['ТИП'].replace({'Расход': 'expense', 'Перевод': 'transfer', 'Доход': 'income'}),
             'source': transactions['СО СЧЁТА'],
             'target': transactions['НА СЧЁТ / НА КАТЕГОРИЮ'],
             'amount': transactions['СУММА'],
-            'currency': transactions['ВАЛЮТА'],
-            'notes': transactions['ЗАМЕТКИ']
+            'notes': transactions['ЗАМЕТКИ'].fillna('')
         })
+        if transactions['ВАЛЮТА'].unique() != ['RUB']:
+            raise Exception('Only RUB is allowed')
+        if set(transactions['ТИП']) != {'Расход', 'Перевод', 'Доход'}:
+            unknown_types = {'Расход', 'Перевод', 'Доход'} - set(transactions['ТИП'])
+            raise Exception(f"Unsupported types: {unknown_types}")
 
         return result

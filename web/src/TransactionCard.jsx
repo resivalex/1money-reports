@@ -26,7 +26,7 @@ function content(data) {
       {data['source']} > {data['target']}
     </Typography>
     <Typography sx={{ fontSize: 20 }} color="text.secondary" gutterBottom>
-      {data['amount']} {data['currency']}
+      {data['amount']} ₽
     </Typography>
     <Typography sx={{ fontSize: 14 }} color="text.secondary" gutterBottom>
       {data['notes']}
