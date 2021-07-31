@@ -1,19 +1,14 @@
 import React, { Component } from 'react'
-import TransactionCard from './TransactionCard'
 import axios from 'axios'
 import Container from '@material-ui/core/Container'
 import Button from '@material-ui/core/Button'
 import Box from '@material-ui/core/Box'
-import Table from '@material-ui/core/Table'
-import TableBody from '@material-ui/core/TableBody'
-import TableCell from '@material-ui/core/TableCell'
-import TableContainer from '@material-ui/core/TableContainer'
-import TableHead from '@material-ui/core/TableHead'
-import TableRow from '@material-ui/core/TableRow'
-import Paper from '@material-ui/core/Paper'
+
+import TransactionCard from './TransactionCard'
+import ExpenseCategorySummary from './ExpenseCategorySummary'
 
 class App extends Component {
-  state = { sampleRecord: null, authIsOpen: false, lastMonthSummary: [] }
+  state = { sampleRecord: null, authIsOpen: false, lastMonthSummary: null }
 
   render() {
     return <Container maxWidth="sm">{this.renderLastMonthSummary()}</Container>
@@ -28,26 +23,7 @@ class App extends Component {
               Сводка за последний месяц
             </Button>
           </Box>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Категория</TableCell>
-                  <TableCell align="right">Сумма</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {this.state.lastMonthSummary.map((row) => (
-                  <TableRow key={row.name}>
-                    <TableCell component="th" scope="row">
-                      {row.category}
-                    </TableCell>
-                    <TableCell align="right">{row.amount}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          {this.state.lastMonthSummary && <ExpenseCategorySummary summary={this.state.lastMonthSummary} />}
         </div>
       </div>
     )

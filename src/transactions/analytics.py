@@ -1,5 +1,6 @@
 from .source_report import SourceReport
 from .expence_analytics import ExpenseAnalytics
+from functools import lru_cache
 
 
 class Analytics:
@@ -24,5 +25,6 @@ class Analytics:
     def expense_analytics(self):
         return ExpenseAnalytics(self.__df()[self.__df()['type'] == 'expense'])
 
+    @lru_cache()
     def __df(self):
         return self.source_report.parse_to_dataframe()

@@ -1,5 +1,7 @@
 import re
 import pendulum
+from functools import lru_cache
+from .expence_aggregation import ExpenseAggregation
 
 
 NIL_SUBCATEGORY = '-'
@@ -19,15 +21,12 @@ class ExpenseAnalytics:
         self.___expenses = expenses
 
     def last_month_summary(self):
-        result = []
-        for category, category_df in self.__last_month_df().groupby('category'):
-            result.append({'category': category, 'amount': f"{category_df['amount'].sum():.02f}"})
-        result = sorted(result, key=lambda x: -float(x['amount']))
-        return result
+        return ExpenseAggregation(self.__last_month_df()).summary()
 
     def __last_month_df(self):
         return self.__df()[self.__df()['date'] >= pendulum.now().start_of('month')]
 
+    @lru_cache()
     def __df(self):
         df = self.___expenses.copy()
         categories = []
