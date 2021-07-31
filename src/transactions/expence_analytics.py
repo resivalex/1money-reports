@@ -23,8 +23,28 @@ class ExpenseAnalytics:
     def last_month_summary(self):
         return ExpenseAggregation(self.__last_month_df()).summary()
 
+    def previous_month_summary(self):
+        return ExpenseAggregation(self.__previous_month_df()).summary()
+
+    def period_summary(self, date_from, date_to):
+        date_from = pendulum.from_format(date_from, 'YYYY-MM-DD')
+        date_to = pendulum.from_format(date_to, 'YYYY-MM-DD')
+        return ExpenseAggregation(self.__period_df(date_from, date_to)).summary()
+
+    def __period_df(self, date_from, date_to):
+        return self.__df()[
+            (self.__df()['date'] >= date_from.start_of('day')) &
+            (self.__df()['date'] <= date_to.start_of('day'))
+        ]
+
     def __last_month_df(self):
-        return self.__df()[self.__df()['date'] >= pendulum.now().start_of('month')]
+        return self.__period_df(pendulum.now().start_of('month'), pendulum.now())
+
+    def __previous_month_df(self):
+        return self.__period_df(
+            pendulum.now().subtract(months=1).start_of('month'),
+            pendulum.now().subtract(months=1).end_of('month')
+        )
 
     @lru_cache()
     def __df(self):

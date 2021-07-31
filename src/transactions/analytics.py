@@ -20,9 +20,15 @@ class Analytics:
         }
 
     def last_month_summary(self):
-        return self.expense_analytics().last_month_summary()
+        return self.__expense_analytics().last_month_summary()
 
-    def expense_analytics(self):
+    def previous_month_summary(self):
+        return self.__expense_analytics().previous_month_summary()
+
+    def period_summary(self, date_from, date_to):
+        return self.__expense_analytics().period_summary(date_from, date_to)
+
+    def __expense_analytics(self):
         return ExpenseAnalytics(self.__df()[self.__df()['type'] == 'expense'])
 
     @lru_cache()

@@ -1,60 +1,70 @@
 import React, { Component } from 'react'
 import axios from 'axios'
 import Container from '@material-ui/core/Container'
-import Button from '@material-ui/core/Button'
 import Box from '@material-ui/core/Box'
-
-import TransactionCard from './TransactionCard'
+import moment from 'moment'
+import DateRange from './DateRange'
+import CircularProgress from '@material-ui/core/CircularProgress'
 import ExpenseCategorySummary from './ExpenseCategorySummary'
 
 class App extends Component {
-  state = { sampleRecord: null, authIsOpen: false, lastMonthSummary: null }
+  state = {
+    sampleRecord: null,
+    authIsOpen: false,
+    summary: null,
+    dateFrom: moment().startOf('month').toDate(),
+    dateTo: moment().endOf('month').toDate()
+  }
+
+  componentDidMount() {
+    this.loadSummary()
+  }
 
   render() {
-    return <Container maxWidth="sm">{this.renderLastMonthSummary()}</Container>
+    return (
+      <Container maxWidth="sm">
+        <Box sx={{ p: 2 }}>
+          <DateRange
+            dateFrom={this.state.dateFrom}
+            dateTo={this.state.dateTo}
+            onDateFromChange={(date) => this.onDateFromChange(date)}
+            onDateToChange={(date) => this.onDateToChange(date)}
+          />
+        </Box>
+        {this.renderLastMonthSummary()}
+      </Container>
+    )
+  }
+
+  onDateFromChange(date) {
+    this.setState({ dateFrom: date }, () => this.loadSummary())
+  }
+
+  onDateToChange(date) {
+    this.setState({ dateTo: date }, () => this.loadSummary())
   }
 
   renderLastMonthSummary() {
     return (
       <div>
-        <div>
-          <Box sx={{ p: 2 }}>
-            <Button variant="contained" onClick={() => this.loadLastMonth()}>
-              Сводка за последний месяц
-            </Button>
-          </Box>
-          {this.state.lastMonthSummary && <ExpenseCategorySummary summary={this.state.lastMonthSummary} />}
-        </div>
+        {this.state.summary ? <ExpenseCategorySummary summary={this.state.summary} /> : <CircularProgress />}
       </div>
     )
   }
 
-  renderRandomTransactionBox() {
-    return (
-      <div>
-        <Box sx={{ p: 2 }}>
-          <TransactionCard data={this.state.sampleRecord} />
-        </Box>
-
-        <Box sx={{ p: 2 }}>
-          <Button variant="contained" onClick={() => this.loadSampleRecord()}>
-            Случайная транзакция
-          </Button>
-        </Box>
-      </div>
-    )
-  }
-
-  loadSampleRecord() {
-    axios.get('/sample_record', { headers: { 'X-Auth-Token': authToken() } }).then((response) => {
-      this.setState({ sampleRecord: response.data.data })
-    })
-  }
-
-  loadLastMonth() {
-    axios.get('/last_month_summary', { headers: { 'X-Auth-Token': authToken() } }).then((response) => {
-      this.setState({ lastMonthSummary: response.data.data })
-    })
+  loadSummary() {
+    this.setState({ summary: null })
+    axios
+      .get('/period_summary', {
+        headers: { 'X-Auth-Token': authToken() },
+        params: {
+          date_from: moment(this.state.dateFrom).format('YYYY-MM-DD'),
+          date_to: moment(this.state.dateTo).format('YYYY-MM-DD')
+        }
+      })
+      .then((response) => {
+        this.setState({ summary: response.data.data })
+      })
   }
 }
 

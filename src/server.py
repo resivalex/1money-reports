@@ -26,7 +26,10 @@ os.environ['PYTHONIOENCODING'] = 'UTF-8'
 
 
 app = Flask(__name__, static_url_path='')
-analytics = Analytics(csv_path=config()['data_path'])
+
+
+def get_analytics():
+    return Analytics(csv_path=config()['data_path'])
 
 
 class UnauthorizedError(Exception):
@@ -89,14 +92,30 @@ def info():
 def sample_record():
     check_authorization()
 
-    return success_response(analytics.sample_record())
+    return success_response(get_analytics().sample_record())
 
 
 @app.route('/last_month_summary', methods=['GET'])
 def last_month_summary():
     check_authorization()
 
-    return success_response(analytics.last_month_summary())
+    return success_response(get_analytics().last_month_summary())
+
+
+@app.route('/previous_month_summary', methods=['GET'])
+def previous_month_summary():
+    check_authorization()
+
+    return success_response(get_analytics().previous_month_summary())
+
+
+@app.route('/period_summary', methods=['GET'])
+def period_summary():
+    check_authorization()
+
+    date_from = request.args.get('date_from')
+    date_to = request.args.get('date_to')
+    return success_response(get_analytics().period_summary(date_from, date_to))
 
 
 @app.route('/static/<path:path>', methods=['GET'])

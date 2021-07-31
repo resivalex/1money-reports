@@ -43,7 +43,7 @@ class ExpenseCategorySummary extends Component {
     return (
       <Fragment>
         {this.props.summary.categories.map((category) => (
-          <Accordion>
+          <Accordion key={category.name}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>{this.renderPriceLine(category)}</AccordionSummary>
             <StyledAccordionDetails>
               <List>
