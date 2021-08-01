@@ -44,7 +44,7 @@ function LinearProgressWithLabel(props) {
 const StyledAccordion = withStyles({
   root: {
     margin: '10px auto',
-    border: '1px solid rgba(0, 0, 0, .125)',
+    border: '1px solid rgba(0, 0, 0, 0.2)',
     boxShadow: 'none',
     '&:before': {
       display: 'none'

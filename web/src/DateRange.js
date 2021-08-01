@@ -18,10 +18,10 @@ class DateRange extends Component {
     return (
       <MuiPickersUtilsProvider utils={MomentUtils}>
         <Grid container spacing={1}>
-          <Grid item xs={12} sm={12} md={4}>
+          <Grid item xs={12} sm={4}>
             {this.renderMonthsSelect()}
           </Grid>
-          <Grid item xs={12} sm={6} md={4}>
+          <Grid item xs={12} sm={4}>
             <KeyboardDatePicker
               style={{width: '100%'}}
               value={this.props.dateFrom}
@@ -33,7 +33,7 @@ class DateRange extends Component {
               autoOk
             />
           </Grid>
-          <Grid item xs={12} sm={6} md={4}>
+          <Grid item xs={12} sm={4}>
             <KeyboardDatePicker
               style={{width: '100%'}}
               value={this.props.dateTo}
