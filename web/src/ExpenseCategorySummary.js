@@ -11,7 +11,10 @@ import Grid from '@material-ui/core/Grid'
 import numeral from 'numeral'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import Box from '@material-ui/core/Box'
-const moneyFormat = '0,0.00'
+import _ from 'lodash'
+import Switch from '@material-ui/core/Switch'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import { withStyles } from '@material-ui/core/styles'
 
 const StyledAccordionDetails = styled(AccordionDetails)`
   display: block;
@@ -38,15 +41,33 @@ function LinearProgressWithLabel(props) {
   )
 }
 
+const StyledAccordion = withStyles({
+  root: {
+    margin: '10px auto',
+    border: '1px solid rgba(0, 0, 0, .125)',
+    boxShadow: 'none',
+    '&:before': {
+      display: 'none'
+    },
+    '&$expanded': {
+      margin: '10px auto'
+    }
+  },
+  expanded: {}
+})(Accordion)
+
 class ExpenseCategorySummary extends Component {
+  state = { showCopecks: false }
+
   render() {
     return (
       <Fragment>
         {this.props.summary.categories.length === 0 && (
           <Typography style={{ textAlign: 'center' }}>Нет трат по выбранным критериям</Typography>
         )}
+        {this.props.summary.categories.length > 0 && this.renderTotal()}
         {this.props.summary.categories.map((category) => (
-          <Accordion key={category.name}>
+          <StyledAccordion key={category.name}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>{this.renderPriceLine(category)}</AccordionSummary>
             <StyledAccordionDetails>
               <List>
@@ -67,10 +88,26 @@ class ExpenseCategorySummary extends Component {
                 })}
               </List>
             </StyledAccordionDetails>
-          </Accordion>
+          </StyledAccordion>
         ))}
+        <FormControlLabel
+          label="Показывать копейки"
+          control={
+            <Switch
+              checked={this.state.showCopecks}
+              onChange={(e) => this.setState({ showCopecks: e.target.checked })}
+              color="primary"
+              inputProps={{ 'aria-label': 'primary checkbox' }}
+            />
+          }
+        ></FormControlLabel>
       </Fragment>
     )
+  }
+
+  renderTotal() {
+    const total = _.sum(_.map(this.props.summary.categories, (category) => numeral(category.amount).value()))
+    return <Typography style={{ fontSize: 24, textAlign: 'center' }}>{this.formatMoney(total)} ₽</Typography>
   }
 
   renderPriceLine(data) {
@@ -80,10 +117,16 @@ class ExpenseCategorySummary extends Component {
           {data.name}
         </Grid>
         <MoneyAmount item xs>
-          <Typography>{numeral(data.amount).format(moneyFormat)} ₽</Typography>
+          <Typography>{this.formatMoney(data.amount)} ₽</Typography>
         </MoneyAmount>
       </Grid>
     )
+  }
+
+  formatMoney(value) {
+    const moneyFormat = this.state.showCopecks ? '0,0.00' : '0,0'
+
+    return numeral(value).format(moneyFormat).replace(',', ' ').replace('.', ',')
   }
 }
 
