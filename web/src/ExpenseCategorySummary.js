@@ -42,6 +42,9 @@ class ExpenseCategorySummary extends Component {
   render() {
     return (
       <Fragment>
+        {this.props.summary.categories.length === 0 && (
+          <Typography style={{ textAlign: 'center' }}>Нет трат по выбранным критериям</Typography>
+        )}
         {this.props.summary.categories.map((category) => (
           <Accordion key={category.name}>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>{this.renderPriceLine(category)}</AccordionSummary>

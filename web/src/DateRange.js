@@ -5,29 +5,45 @@ import { MuiPickersUtilsProvider, KeyboardDatePicker } from '@material-ui/picker
 import MenuItem from '@material-ui/core/MenuItem'
 import Select from '@material-ui/core/Select'
 import moment from 'moment'
+import 'moment/locale/ru'
+import _ from 'lodash'
+import InputLabel from '@material-ui/core/InputLabel'
+import FormControl from '@material-ui/core/FormControl'
 
-const monthDeltas = [0, 1, 2, 3, 4, 5]
+const monthSelectLimit = 6
+const dateFormat = 'yyyy-MM-DD'
 
 class DateRange extends Component {
   render() {
     return (
       <MuiPickersUtilsProvider utils={MomentUtils}>
-        <Grid container justifyContent="space-around">
-          <KeyboardDatePicker
-            value={this.props.dateFrom}
-            onChange={(date) => this.props.onDateFromChange(date.toDate())}
-            format="yyyy-MM-DD"
-            variant="inline"
-            autoOk
-          />
-          <KeyboardDatePicker
-            value={this.props.dateTo}
-            onChange={(date) => this.props.onDateToChange(date.toDate())}
-            format="yyyy-MM-DD"
-            variant="inline"
-            autoOk
-          />
-          {/*{this.renderMonthsSelect()}*/}
+        <Grid container spacing={1}>
+          <Grid item xs>
+            <KeyboardDatePicker
+              value={this.props.dateFrom}
+              onChange={(date) => this.props.onDateFromChange(date.toDate())}
+              format={dateFormat}
+              variant="inline"
+              inputVariant="outlined"
+              label="От"
+              autoOk
+            />
+          </Grid>
+          <Grid item xs>
+            <KeyboardDatePicker
+              value={this.props.dateTo}
+              onChange={(date) => this.props.onDateToChange(date.toDate())}
+              format={dateFormat}
+              variant="inline"
+              inputVariant="outlined"
+              label="До"
+              autoOk
+            />
+          </Grid>
+          <Grid item xs>
+            {' '}
+            {this.renderMonthsSelect()}
+          </Grid>
         </Grid>
       </MuiPickersUtilsProvider>
     )
@@ -35,46 +51,58 @@ class DateRange extends Component {
 
   renderMonthsSelect() {
     return (
-      <Select value={this.currentMonthDelta()} onChange={(value) => this.setMonth(value)}>
-        <MenuItem value="">-</MenuItem>
-        {monthDeltas.map((monthsAgo) => {
-          return (
-            <MenuItem key={monthsAgo} value={monthsAgo}>
-              {monthsAgo}
-            </MenuItem>
-          )
-        })}
-      </Select>
+      <FormControl style={{ width: '100%' }} variant="outlined">
+        <InputLabel variant="outlined" style={{ backgroundColor: 'white', paddingLeft: 6, paddingRight: 6, left: -6 }}>
+          Месяц
+        </InputLabel>
+        <Select value={this.currentMonthDelta()} onChange={(value) => this.setMonth(value.target.value)}>
+          <MenuItem value="custom_period">...</MenuItem>
+          {_.times(monthSelectLimit, (monthsAgo) => {
+            return (
+              <MenuItem key={monthsAgo} value={monthsAgo}>
+                {moment().subtract(monthsAgo, 'months').locale('ru').format('MMMM')}
+              </MenuItem>
+            )
+          })}
+        </Select>
+      </FormControl>
     )
   }
 
   currentMonthDelta() {
-    for (let i = 0; i < monthDeltas.length; i++) {
-      const monthsAgo = monthDeltas[i]
+    for (let monthsAgo = 0; monthsAgo < monthSelectLimit; monthsAgo++) {
       const monthsAgoRange = this.monthAgoRange(monthsAgo)
-      if (monthsAgoRange[0] === this.props.dateFrom && monthsAgoRange[1] === this.props.dateTo) {
+      if (
+        moment(monthsAgoRange['dateFrom']).format(dateFormat) === moment(this.props.dateFrom).format(dateFormat) &&
+        moment(monthsAgoRange['dateTo']).format(dateFormat) === moment(this.props.dateTo).format(dateFormat)
+      ) {
         return monthsAgo
       }
     }
-    return ''
+    return 'custom_period'
   }
 
   setMonth(monthsAgo) {
     const range = this.monthPeriods()[monthsAgo]
-    this.props.onDateToChange(range[0])
-    this.props.onDateToChange(range[1])
+    if (!range) {
+      return
+    }
+    this.props.onDateFromChange(range['dateFrom'])
+    this.props.onDateToChange(range['dateTo'])
   }
 
   monthPeriods() {
-    return monthDeltas.map((monthsAgo) => {
-      return this.monthAgoRange(monthsAgo)
+    const result = {}
+    _.times(monthSelectLimit, (monthsAgo) => {
+      result[monthsAgo] = this.monthAgoRange(monthsAgo)
     })
+    return result
   }
 
-  monthAgoRange(delta) {
+  monthAgoRange(monthsAgo) {
     return {
-      dateFrom: moment().subtract(delta, 'months').startOf('month').toDate(),
-      dateTo: moment().subtract(delta, 'months').endOf('month').toDate()
+      dateFrom: moment().subtract(monthsAgo, 'months').startOf('month').toDate(),
+      dateTo: moment().subtract(monthsAgo, 'months').endOf('month').toDate()
     }
   }
 }

@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import axios from 'axios'
 import Container from '@material-ui/core/Container'
-import Box from '@material-ui/core/Box'
 import moment from 'moment'
 import DateRange from './DateRange'
 import CircularProgress from '@material-ui/core/CircularProgress'
@@ -23,14 +22,14 @@ class App extends Component {
   render() {
     return (
       <Container maxWidth="sm">
-        <Box sx={{ p: 2 }}>
+        <div style={{padding: '12px 0'}}>
           <DateRange
             dateFrom={this.state.dateFrom}
             dateTo={this.state.dateTo}
             onDateFromChange={(date) => this.onDateFromChange(date)}
             onDateToChange={(date) => this.onDateToChange(date)}
           />
-        </Box>
+        </div>
         {this.renderLastMonthSummary()}
       </Container>
     )
@@ -47,7 +46,13 @@ class App extends Component {
   renderLastMonthSummary() {
     return (
       <div>
-        {this.state.summary ? <ExpenseCategorySummary summary={this.state.summary} /> : <CircularProgress />}
+        {this.state.summary ? (
+          <ExpenseCategorySummary summary={this.state.summary} />
+        ) : (
+          <div style={{ display: 'flex' }}>
+            <CircularProgress style={{ margin: '20px auto' }} />
+          </div>
+        )}
       </div>
     )
   }
