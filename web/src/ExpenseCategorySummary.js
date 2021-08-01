@@ -31,6 +31,7 @@ import AccountBalanceOutlinedIcon from '@material-ui/icons/AccountBalanceOutline
 import LocalFloristOutlinedIcon from '@material-ui/icons/LocalFloristOutlined'
 import PoolOutlinedIcon from '@material-ui/icons/PoolOutlined'
 import EventNoteOutlinedIcon from '@material-ui/icons/EventNoteOutlined'
+import AutorenewIcon from '@material-ui/icons/Autorenew'
 
 const DefaultIcon = Brightness1OutlinedIcon
 const categoryMetas = [
@@ -48,7 +49,8 @@ const categoryMetas = [
   { name: 'Накопления', icon: AccountBalanceOutlinedIcon },
   { name: 'Подарки', icon: LocalFloristOutlinedIcon },
   { name: 'Спорт', icon: PoolOutlinedIcon },
-  { name: 'Крупные', icon: EventNoteOutlinedIcon }
+  { name: 'Крупные', icon: EventNoteOutlinedIcon },
+  { name: 'Корректировка', icon: AutorenewIcon }
 ]
 
 const MoneyAmount = styled(Grid)`
@@ -188,7 +190,7 @@ class ExpenseCategorySummary extends Component {
     const Icon = categoryMeta(data.name)['icon']
     return (
       <Grid container>
-        <Grid xs={1}>
+        <Grid xs={1} style={{ minWidth: 28 }}>
           <Icon fontSize="small" />
         </Grid>
         <Grid item xs>
