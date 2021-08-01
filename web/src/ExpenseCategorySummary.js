@@ -15,16 +15,60 @@ import _ from 'lodash'
 import Switch from '@material-ui/core/Switch'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import { withStyles } from '@material-ui/core/styles'
+import Brightness1OutlinedIcon from '@material-ui/icons/Brightness1Outlined'
+import LocalMallOutlinedIcon from '@material-ui/icons/LocalMallOutlined'
+import TimelineOutlinedIcon from '@material-ui/icons/TimelineOutlined'
+import LocalHospitalOutlinedIcon from '@material-ui/icons/LocalHospitalOutlined'
+import LocalCafeOutlinedIcon from '@material-ui/icons/LocalCafeOutlined'
+import BrushOutlinedIcon from '@material-ui/icons/BrushOutlined'
+import WbSunnyOutlinedIcon from '@material-ui/icons/WbSunnyOutlined'
+import LocalOfferOutlinedIcon from '@material-ui/icons/LocalOfferOutlined'
+import OndemandVideoOutlinedIcon from '@material-ui/icons/OndemandVideoOutlined'
+import LocalGroceryStoreOutlinedIcon from '@material-ui/icons/LocalGroceryStoreOutlined'
+import FaceOutlinedIcon from '@material-ui/icons/FaceOutlined'
+import DirectionsBusOutlinedIcon from '@material-ui/icons/DirectionsBusOutlined'
+import AccountBalanceOutlinedIcon from '@material-ui/icons/AccountBalanceOutlined'
+import LocalFloristOutlinedIcon from '@material-ui/icons/LocalFloristOutlined'
+import PoolOutlinedIcon from '@material-ui/icons/PoolOutlined'
+import EventNoteOutlinedIcon from '@material-ui/icons/EventNoteOutlined'
 
-const StyledAccordionDetails = styled(AccordionDetails)`
-  display: block;
-`
+const DefaultIcon = Brightness1OutlinedIcon
+const categoryMetas = [
+  { name: 'Продукты', icon: LocalGroceryStoreOutlinedIcon },
+  { name: 'Саморазвитие', icon: TimelineOutlinedIcon },
+  { name: 'Здоровье', icon: LocalHospitalOutlinedIcon },
+  { name: 'Кафе', icon: LocalCafeOutlinedIcon },
+  { name: 'Красота', icon: BrushOutlinedIcon },
+  { name: 'Досуг', icon: WbSunnyOutlinedIcon },
+  { name: 'Одежда', icon: LocalOfferOutlinedIcon },
+  { name: 'Сервисы', icon: OndemandVideoOutlinedIcon },
+  { name: 'Покупки', icon: LocalMallOutlinedIcon },
+  { name: 'Семья', icon: FaceOutlinedIcon },
+  { name: 'Транспорт', icon: DirectionsBusOutlinedIcon },
+  { name: 'Накопления', icon: AccountBalanceOutlinedIcon },
+  { name: 'Подарки', icon: LocalFloristOutlinedIcon },
+  { name: 'Спорт', icon: PoolOutlinedIcon },
+  { name: 'Крупные', icon: EventNoteOutlinedIcon }
+]
+
 const MoneyAmount = styled(Grid)`
   text-align: right;
 `
 const TextAlignRightTypography = styled(Typography)`
   text-align: right;
 `
+
+function categoryMeta(name) {
+  for (let i = 0; i < categoryMetas.length; i++) {
+    if (categoryMetas[i].name === name) {
+      return categoryMetas[i]
+    }
+  }
+  return {
+    name: 'Default',
+    icon: DefaultIcon
+  }
+}
 
 function LinearProgressWithLabel(props) {
   return (
@@ -43,18 +87,35 @@ function LinearProgressWithLabel(props) {
 
 const StyledAccordion = withStyles({
   root: {
-    margin: '10px auto',
+    margin: '12px 0 !important',
     border: '1px solid rgba(0, 0, 0, 0.2)',
     boxShadow: 'none',
     '&:before': {
       display: 'none'
     },
     '&$expanded': {
-      margin: '10px auto'
+      margin: '12px 0 !important'
+    }
+  }
+})(Accordion)
+const StyledAccordionSummary = withStyles({
+  root: {
+    '&$expanded': {
+      minHeight: 'initial !important'
     }
   },
-  expanded: {}
-})(Accordion)
+  content: {
+    '&$expanded': {
+      margin: '12px 0 !important'
+    }
+  }
+})(AccordionSummary)
+const StyledAccordionDetails = withStyles({
+  root: {
+    padding: 0,
+    display: 'block'
+  }
+})(AccordionDetails)
 
 class ExpenseCategorySummary extends Component {
   state = { showCopecks: false }
@@ -68,7 +129,9 @@ class ExpenseCategorySummary extends Component {
         {this.props.summary.categories.length > 0 && this.renderTotal()}
         {this.props.summary.categories.map((category) => (
           <StyledAccordion key={category.name}>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>{this.renderPriceLine(category)}</AccordionSummary>
+            <StyledAccordionSummary expandIcon={<ExpandMoreIcon />}>
+              {this.renderPriceLine(category)}
+            </StyledAccordionSummary>
             <StyledAccordionDetails>
               <List>
                 {category.subcategories.map((subcategory) => {
@@ -77,7 +140,7 @@ class ExpenseCategorySummary extends Component {
                     <ListItem key={subcategory.name} button>
                       <Grid container>
                         <Grid item xs={12}>
-                          {this.renderPriceLine(subcategory)}
+                          {this.renderSubcategoryPriceLine(subcategory)}
                         </Grid>
                         <Grid item xs={12}>
                           <LinearProgressWithLabel value={percentage} />
@@ -100,7 +163,7 @@ class ExpenseCategorySummary extends Component {
               inputProps={{ 'aria-label': 'primary checkbox' }}
             />
           }
-        ></FormControlLabel>
+        />
       </Fragment>
     )
   }
@@ -111,10 +174,27 @@ class ExpenseCategorySummary extends Component {
   }
 
   renderPriceLine(data) {
+    const Icon = categoryMeta(data.name)['icon']
+    return (
+      <Grid container>
+        <Grid xs={1}>
+          <Icon fontSize="small" />
+        </Grid>
+        <Grid item xs>
+          <Typography>{data.name}</Typography>
+        </Grid>
+        <MoneyAmount item xs>
+          <Typography>{this.formatMoney(data.amount)} ₽</Typography>
+        </MoneyAmount>
+      </Grid>
+    )
+  }
+
+  renderSubcategoryPriceLine(data) {
     return (
       <Grid container>
         <Grid item xs>
-          {data.name}
+          <Typography>{data.name}</Typography>
         </Grid>
         <MoneyAmount item xs>
           <Typography>{this.formatMoney(data.amount)} ₽</Typography>
