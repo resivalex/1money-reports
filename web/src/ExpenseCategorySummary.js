@@ -95,7 +95,8 @@ const StyledAccordion = withStyles({
     },
     '&$expanded': {
       margin: '12px 0 !important'
-    }
+    },
+    expanded: {}
   }
 })(Accordion)
 const StyledAccordionSummary = withStyles({
@@ -105,10 +106,12 @@ const StyledAccordionSummary = withStyles({
     }
   },
   content: {
+    margin: '12px 0 !important',
     '&$expanded': {
       margin: '12px 0 !important'
     }
-  }
+  },
+  expanded: {}
 })(AccordionSummary)
 const StyledAccordionDetails = withStyles({
   root: {
@@ -118,7 +121,7 @@ const StyledAccordionDetails = withStyles({
 })(AccordionDetails)
 
 class ExpenseCategorySummary extends Component {
-  state = { showCopecks: false }
+  state = { showCopecks: false, expandedCategory: '' }
 
   render() {
     return (
@@ -128,12 +131,16 @@ class ExpenseCategorySummary extends Component {
         )}
         {this.props.summary.categories.length > 0 && this.renderTotal()}
         {this.props.summary.categories.map((category) => (
-          <StyledAccordion key={category.name}>
+          <StyledAccordion
+            key={category.name}
+            expanded={category.name === this.state.expandedCategory}
+            onChange={(e, isExpanded) => this.categoryExpandingChanged(category.name, isExpanded)}
+          >
             <StyledAccordionSummary expandIcon={<ExpandMoreIcon />}>
               {this.renderPriceLine(category)}
             </StyledAccordionSummary>
             <StyledAccordionDetails>
-              <List>
+              <List style={{ padding: 0 }}>
                 {category.subcategories.map((subcategory) => {
                   const percentage = (numeral(subcategory.amount).value() / numeral(category.amount).value()) * 100
                   return (
@@ -166,6 +173,10 @@ class ExpenseCategorySummary extends Component {
         />
       </Fragment>
     )
+  }
+
+  categoryExpandingChanged(categoryName, isExpanded) {
+    this.setState({ expandedCategory: isExpanded ? categoryName : '' })
   }
 
   renderTotal() {
